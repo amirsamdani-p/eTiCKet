@@ -1,6 +1,16 @@
 #!/bin/bash
 
-# Overwrite Nginx to point directly to the public folder
+# 1. Recreate the missing Laravel framework cache storage paths dynamically
+mkdir -p /home/site/wwwroot/storage/framework/views
+mkdir -p /home/site/wwwroot/storage/framework/cache
+mkdir -p /home/site/wwwroot/storage/framework/sessions
+mkdir -p /home/site/wwwroot/storage/logs
+
+# 2. Fix the file permissions so Nginx can write to the cache
+chmod -R 775 /home/site/wwwroot/storage
+chown -R www-data:www-data /home/site/wwwroot/storage
+
+# 3. Overwrite Nginx configuration to point directly to the public folder
 echo "server {
     listen 8080;
     listen [::]:8080;
@@ -19,5 +29,5 @@ echo "server {
     }
 }" > /etc/nginx/sites-available/default
 
-# Reload the web routing server securely
+# 4. Reload the web routing server securely
 service nginx reload
